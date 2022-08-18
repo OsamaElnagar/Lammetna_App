@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:social_app/models/chatModel.dart';
 import 'package:social_app/models/commentModel.dart';
 import 'package:social_app/models/commentReplyModel.dart';
 import 'package:social_app/models/likePostModel.dart';
@@ -36,6 +37,7 @@ class AppCubit extends Cubit<AppStates> {
   File? coverImageFile;
   File? commentImageFile;
   File? commentReplyImageFile;
+  File? messageImageFile;
   ImagePicker picker = ImagePicker();
   List postImageFiles = [];
   List<String> myPostId = [];
@@ -53,11 +55,127 @@ class AppCubit extends Cubit<AppStates> {
   List<LoginModel> allUsers = [];
   List<StoryModel> stories = [];
   List<String> storyId = [];
+  List<ChatsModel> messages = [];
+
+  void getGalleryMessageImage() async {
+    var pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      messageImageFile = File(pickedFile.path);
+
+      emit(AppGetGalleryImageSuccessState());
+    } else {
+      pint('No Image selected');
+      emit(AppGetGalleryImageErrorState());
+    }
+  }
+
+  void getCameraMessageImage() async {
+    var pickedFile = await picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      messageImageFile = File(pickedFile.path);
+      emit(AppGetCameraImageSuccessState());
+    } else {
+      pint('No Image selected');
+      emit(AppGetCameraImageErrorState());
+    }
+  }
+
+  void undoGetMessageImage() {
+    messageImageFile = null;
+    emit(AppUndoGetMessageImageSuccessState());
+  }
+
+  void senMessage({
+    required String receiverId,
+    required String textMessage,
+    String? imageMessage,
+    required String messageDateTime,
+  }) {
+    emit(AppSendMessageLoadingState());
+    ChatsModel chatsModel = ChatsModel(
+      chatPersonName: loginModel!.name,
+      senderId: loginModel!.uId,
+      receiverId: receiverId,
+      textMessage: textMessage,
+      imageMessage: imageMessage ?? '',
+      messageDateTime: messageDateTime,
+    );
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(loginModel!.uId)
+        .collection('chats')
+        .doc(receiverId)
+        .collection('messages')
+        .add(chatsModel.toMap())
+        .then((value) {
+      emit(AppSendMessageSuccessState());
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppSendMessageErrorState(onError.toString()));
+    });
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(receiverId)
+        .collection('chats')
+        .doc(loginModel!.uId)
+        .collection('messages')
+        .add(chatsModel.toMap())
+        .then((value) {
+      emit(AppSendMessageSuccessState());
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppSendMessageErrorState(onError.toString()));
+    });
+  }
+
+  void sendMessageWithImage({
+    required String receiverId,
+    required String textMessage,
+    required String messageDateTime,
+  }) {
+    emit(AppSendMessageWithImageLoadingState());
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child(
+        'users/${loginModel!.uId}/Chats/$receiverId/Messages/${Uri.file(messageImageFile!.path).pathSegments.last}')
+        .putFile(messageImageFile!)
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+        senMessage(
+          receiverId: receiverId,
+          textMessage: textMessage,
+          messageDateTime: messageDateTime,
+          imageMessage: value,
+        );
+        emit(AppSendMessageSuccessState());
+      }).catchError((onError) {
+        pint(onError.toString());
+        emit(AppSendMessageErrorState(onError.toString()));
+      });
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppSendMessageWithImageErrorState(onError.toString()));
+    });
+  }
+
+  void getMessages({required String receiverId}){
+    FirebaseFirestore.instance.collection('users')
+        .doc(loginModel!.uId).collection('chats')
+        .doc(receiverId).collection('messages')
+        .orderBy('messageDateTime').snapshots()
+        .listen((event) {
+          messages.clear();
+          for(var element in event.docs){
+            messages.add(ChatsModel.fromJson(element.data()));
+          }
+          emit(AppGetMessageSuccessState());
+    });
+  }
 
   void createStory({
     required String storyDate,
     required String storyText,
-     String? storyImage,
+    String? storyImage,
   }) {
     emit(AppCreateStoryLoadingState());
     StoryModel storyModel = StoryModel(
@@ -66,7 +184,7 @@ class AppCubit extends Cubit<AppStates> {
       profileImage: loginModel!.profileImage,
       storyDate: storyDate,
       storyText: storyText,
-      storyImage: storyImage??'',
+      storyImage: storyImage ?? '',
     );
     FirebaseFirestore.instance
         .collection('stories')
@@ -86,11 +204,13 @@ class AppCubit extends Cubit<AppStates> {
     emit(AppCreateStoryImageLoadingState());
     firebase_storage.FirebaseStorage.instance
         .ref()
-        .child('storiesImages/${Uri.file(storyImageFile!.path).pathSegments.last}')
+        .child(
+            'storiesImages/${Uri.file(storyImageFile!.path).pathSegments.last}')
         .putFile(storyImageFile!)
         .then((value) {
       value.ref.getDownloadURL().then((value) {
-       createStory(storyDate: storyDate, storyText: storyText, storyImage: value);
+        createStory(
+            storyDate: storyDate, storyText: storyText, storyImage: value);
         emit(AppCreateStoryImageSuccessState());
       }).catchError((onError) {
         pint(onError.toString());
@@ -154,6 +274,11 @@ class AppCubit extends Cubit<AppStates> {
     pint(distinct.toString());
 
     return distinct.map((e) => e).toSet().toList();
+  }
+
+  void wannaSearch() {
+    wannaSearchForUser = !wannaSearchForUser;
+    emit(AppWannaSearchSuccessState());
   }
 
   void getUserData() {
@@ -943,7 +1068,7 @@ class AppCubit extends Cubit<AppStates> {
     await FirebaseAuth.instance.signOut().then((value) {
       CacheHelper.removeData(key: 'uid').then((value) {
         uId = null;
-        navigate2(context, LoginScreen());
+        navigate2(context, const LoginScreen());
       });
 
       emit(AppSignOutSuccessState());

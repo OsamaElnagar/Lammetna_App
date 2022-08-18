@@ -2,73 +2,68 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:social_app/models/loginModel.dart';
+import 'package:social_app/modules/messangerScreen.dart';
 import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
 import 'package:social_app/shared/components/components.dart';
 import 'package:social_app/shared/styles/iconBroken.dart';
+import '../shared/components/constants.dart';
 
-class ChatsScreen extends StatelessWidget {
+class ChatsScreen extends StatefulWidget {
   const ChatsScreen({Key? key}) : super(key: key);
 
+  @override
+  State<ChatsScreen> createState() => _ChatsScreenState();
+}
+
+class _ChatsScreenState extends State<ChatsScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
-        // List<LoginModel> lista =[
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        //   LoginModel(name: 'name', phone: 'phone', email: 'email', bio: 'bio', profileImage: 'profileImage', profileCover: 'profileCover', uId: ''),
-        // ];
+        FocusNode searchUserNode = FocusNode();
+        TextEditingController textEditingController = TextEditingController();
+
         return Scaffold(
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: ListView.separated(
-                        physics: const NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        primary: false,
-                        itemBuilder: (context, index) {
-                          return buildChatItem(
-                              loginModel: AppCubit.get(context).allUsers[index],
-                              index: index);
+                if (wannaSearchForUser)
+                  SizedBox(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: textEditingController,
+                        focusNode: searchUserNode,
+                        keyboardType: TextInputType.name,
+                        decoration: const InputDecoration(
+                            hintText: 'Search for a user',
+                            hintStyle: TextStyle(color: Colors.black),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.horizontal(
+                              right: Radius.circular(20),
+                              left: Radius.circular(20),
+                            ))),
+                        onChanged: (inputText) {
+                          setState(() {});
                         },
-                        separatorBuilder: (context, index) {
-                          return Padding(
-                            padding: const EdgeInsets.only(
-                                left: 28.0, right: 28.0, top: 5, bottom: 5),
-                            child: Container(
-                              height: 1,
-                              width: double.infinity,
-                              color: Colors.grey[300],
-                            ),
-                          );
+                        onFieldSubmitted: (text) {
+                          setState(() {
+                            FocusScope.of(context).unfocus();
+                          });
                         },
-                        itemCount: AppCubit.get(context).allUsers.length),
+                      ),
+                    ),
                   ),
+                ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) => buildChatItem(
+                      loginModel: AppCubit.get(context).allUsers[index],
+                      index: index),
+                  separatorBuilder: (context, index) => const SizedBox(),
+                  itemCount: AppCubit.get(context).allUsers.length,
                 ),
               ],
             ),
@@ -81,12 +76,11 @@ class ChatsScreen extends StatelessWidget {
   Widget buildChatItem({required LoginModel loginModel, required int index}) {
     return InkWell(
       onTap: () {
-        pint(index.toString());
+       navigateTo(context, MessengerScreen(loginModel: loginModel,));
       },
       child: Card(
         margin: EdgeInsets.zero,
-        color: Colors.deepPurple,
-        elevation: 15,
+        // color: Colors.deepPurple.withOpacity(.4),
         child: Padding(
           padding: const EdgeInsets.only(left: 2, right: 2, bottom: 4, top: 4),
           child: Row(
@@ -113,7 +107,7 @@ class ChatsScreen extends StatelessWidget {
                     ),
                     ///////////////////////////
                     // i will display here th last message
-                    Text('Last Message')
+                    const Text('Last Message')
                   ],
                 ),
               ),

@@ -19,6 +19,7 @@ class _HomeLayoutState extends State<HomeLayout> {
       listener: (context, state) {},
       builder: (context, state) {
         var cubit = AppCubit.get(context);
+
         return DefaultTabController(
           length: 3,
           child: Scaffold(
@@ -37,6 +38,12 @@ class _HomeLayoutState extends State<HomeLayout> {
                           child: const Text('SignOut',
                           style:TextStyle(color: Colors.white)
                             ,),),
+                    if (cubit.currentIndex == 1)
+                      IconButton(
+                        onPressed: () {
+                          cubit.wannaSearch();
+                        },
+                        icon: const Icon(IconBroken.Search)),
                   ],
                   bottom: TabBar(
                     indicatorSize: TabBarIndicatorSize.label,

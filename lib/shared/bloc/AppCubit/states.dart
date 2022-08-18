@@ -68,6 +68,8 @@ class AppGetCameraImageErrorState extends AppStates {}
 
 class AppUndoGetPostImageSuccessState extends AppStates {}
 
+class AppUndoGetMessageImageSuccessState extends AppStates {}
+
 class AppUndoGetProfileImageSuccessState extends AppStates {}
 
 class AppUndoGetCoverImageSuccessState extends AppStates {}
@@ -251,6 +253,7 @@ class AppCreateStoryImageErrorState extends AppStates {
 
   AppCreateStoryImageErrorState(this.error);
 }
+
 class AppGetStoryLoadingState extends AppStates {}
 
 class AppGetStorySuccessState extends AppStates {}
@@ -259,4 +262,38 @@ class AppGetStoryErrorState extends AppStates {
   final String error;
 
   AppGetStoryErrorState(this.error);
+}
+
+class AppWannaSearchSuccessState extends AppStates {}
+
+class AppWannaSearchErrorState extends AppStates {
+  final String error;
+
+  AppWannaSearchErrorState(this.error);
+}
+
+class AppSendMessageLoadingState extends AppStates {}
+class AppSendMessageSuccessState extends AppStates {}
+
+class AppSendMessageErrorState extends AppStates {
+  final String error;
+
+  AppSendMessageErrorState(this.error);
+}
+
+class AppSendMessageWithImageLoadingState extends AppStates {}
+class AppSendMessageWithImageSuccessState extends AppStates {}
+
+class AppSendMessageWithImageErrorState extends AppStates {
+  final String error;
+
+  AppSendMessageWithImageErrorState(this.error);
+}
+
+class AppGetMessageSuccessState extends AppStates {}
+
+class AppGetMessageErrorState extends AppStates {
+  final String error;
+
+  AppGetMessageErrorState(this.error);
 }
