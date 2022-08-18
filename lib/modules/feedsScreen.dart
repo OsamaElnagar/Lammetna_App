@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:social_app/modules/postScreen.dart';
 import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
+import 'package:social_app/shared/components/buildStoryItem.dart';
 import 'package:social_app/shared/components/components.dart';
 import '../shared/components/buildPostItem.dart';
 
@@ -24,12 +25,15 @@ class FeedsScreen extends StatelessWidget {
               const Duration(milliseconds: 1800),
               () {
                 cubit.getFeedPosts();
+                cubit.getStory();
               },
             );
           },
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Card(
                   child: Stack(
@@ -63,8 +67,51 @@ class FeedsScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-                ////////////////////// Don't forget stories section.
-                /////////////
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Stories for today',
+                    style: GoogleFonts.lobster(
+                        fontSize: 20, fontWeight: FontWeight.w800),
+                  ),
+                ),
+                SizedBox(
+                  height: 250,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          buildFirstStoryItem(
+                              context: context, loginModel: cubit.loginModel),
+                          const SizedBox(
+                            width: 2,
+                          ),
+
+                          ConditionalBuilder(
+                            condition:cubit.stories.isNotEmpty,
+                            builder:(context)=> ListView.separated(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, index) {
+                                return buildStoryItem(
+                                    context: context,
+                                    index: index,
+                                    storyModel: cubit.stories[index]);
+                              },
+                              itemCount: cubit.stories.length,
+                              separatorBuilder: (context, index) => const SizedBox(
+                                width: 2,
+                              ),
+                            ),
+                          fallback: (context)=>SizedBox(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
                 ConditionalBuilder(
                   condition: AppCubit.get(context).feedPosts.isNotEmpty,
                   builder: (context) => ListView.separated(

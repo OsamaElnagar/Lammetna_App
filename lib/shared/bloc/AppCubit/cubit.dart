@@ -15,6 +15,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/shared/components/components.dart';
 import 'package:social_app/shared/network/local/cache_helper.dart';
 import '../../../models/boardingModel.dart';
+import '../../../models/storyModel.dart';
 import '../../../modules/feedsScreen.dart';
 import '../../../modules/profileScreen.dart';
 import '../../components/constants.dart';
@@ -26,79 +27,12 @@ class AppCubit extends Cubit<AppStates> {
 
   static AppCubit get(context) => BlocProvider.of(context);
 
-  int currentIndex = 0;
-  double bottomSheetHeight = 350;
-
-  List<Widget> appTitles = [
-    const Text('Feeds'),
-    const Text('Chats'),
-    const Text('Profile'),
-  ];
-
-  void changeBottomSheetHeight() {
-    if (bottomSheetHeight == 350) {
-      bottomSheetHeight = 700;
-    } else {
-      bottomSheetHeight = 350;
-    }
-    emit(AppChangeBSHeightState());
-  }
-
-  void changeIndex(index) {
-    currentIndex = index;
-    if (index == 1) {
-      getAllUsers();
-    }
-    if (index == 2) {
-      getPosts();
-    }
-    emit(AppChangeBNBState());
-  }
-
-  List<BottomNavigationBarItem> items = [
-    const BottomNavigationBarItem(icon: Icon(IconBroken.Home), label: 'Home'),
-    const BottomNavigationBarItem(icon: Icon(IconBroken.Chat), label: 'Chats'),
-    const BottomNavigationBarItem(
-        icon: Icon(IconBroken.Profile), label: 'Profile')
-  ];
-
-  List<Widget> screens = [
-    const FeedsScreen(),
-    const ChatsScreen(),
-    const ProfileScreen(),
-  ];
-
-  void endBoarding(context) {
-    CacheHelper.putData('lastPage', lastPage!).then((value) {
-      if (value) {
-        navigate2(context, const LoginScreen());
-      }
-    }).catchError((onError) {});
-  }
-
-  List<BoardingModel> boarding = [
-    BoardingModel(
-      title: 'communicate with your friends',
-      body: 'reach your friends easily and professionally ',
-      image: 'assets/images/communicate.png',
-    ),
-    BoardingModel(
-      title: 'Show your self to the world',
-      body: 'Keep the world in backup with your latest updates',
-      image: 'assets/images/show-yourself-poster.jpg',
-    ),
-    BoardingModel(
-      title: 'See the latest news ',
-      body: 'Stay notified with the trending news around the world',
-      image: 'assets/images/unnamed.jpg',
-    ),
-  ];
-
   LoginModel? loginModel;
   PostModel? postModel;
   LikePostModel? likePostModel;
   File? postImageFile;
   File? profileImageFile;
+  File? storyImageFile;
   File? coverImageFile;
   File? commentImageFile;
   File? commentReplyImageFile;
@@ -117,8 +51,72 @@ class AppCubit extends Cubit<AppStates> {
   List<String> replyId = [];
   List<int> commentCounter = [];
   List<LoginModel> allUsers = [];
+  List<StoryModel> stories = [];
+  List<String> storyId = [];
 
-  // List<CommentModel> distinctComment = [];
+  void createStory({
+    required String storyDate,
+    required String storyText,
+     String? storyImage,
+  }) {
+    emit(AppCreateStoryLoadingState());
+    StoryModel storyModel = StoryModel(
+      name: loginModel!.name,
+      storyUid: loginModel!.uId,
+      profileImage: loginModel!.profileImage,
+      storyDate: storyDate,
+      storyText: storyText,
+      storyImage: storyImage??'',
+    );
+    FirebaseFirestore.instance
+        .collection('stories')
+        .add(storyModel.toMap())
+        .then((value) {
+      emit(AppCreateStorySuccessState());
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppCreateStoryErrorState(onError.toString()));
+    });
+  }
+
+  void createStoryWithImage({
+    required String storyText,
+    required String storyDate,
+  }) {
+    emit(AppCreateStoryImageLoadingState());
+    firebase_storage.FirebaseStorage.instance
+        .ref()
+        .child('storiesImages/${Uri.file(storyImageFile!.path).pathSegments.last}')
+        .putFile(storyImageFile!)
+        .then((value) {
+      value.ref.getDownloadURL().then((value) {
+       createStory(storyDate: storyDate, storyText: storyText, storyImage: value);
+        emit(AppCreateStoryImageSuccessState());
+      }).catchError((onError) {
+        pint(onError.toString());
+        emit(AppCreatePostErrorState(onError.toString()));
+      });
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppCreateStoryImageErrorState(onError.toString()));
+    });
+  }
+
+  void getStory() {
+    emit(AppGetStoryLoadingState());
+    stories.clear();
+    storyId.clear();
+    FirebaseFirestore.instance.collection('stories').get().then((value) {
+      for (var element in value.docs) {
+        stories.add(StoryModel.fromJson(element.data()));
+        storyId.add(element.id);
+      }
+      emit(AppGetStorySuccessState());
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppGetStoryErrorState(onError.toString()));
+    });
+  }
 
   List<CommentModel> removeDuplicates(List<CommentModel> comments) {
     List<CommentModel> distinct;
@@ -305,6 +303,34 @@ class AppCubit extends Cubit<AppStates> {
       pint(onError.toString());
       emit(AppGetFeedPostErrorState(onError.toString()));
     });
+  }
+
+  void getGalleryStoryImage() async {
+    var pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      storyImageFile = File(pickedFile.path);
+
+      emit(AppGetGalleryImageSuccessState());
+    } else {
+      pint('No Image selected');
+      emit(AppGetGalleryImageErrorState());
+    }
+  }
+
+  void getCameraStoryImage() async {
+    var pickedFile = await picker.pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      storyImageFile = File(pickedFile.path);
+      emit(AppGetCameraImageSuccessState());
+    } else {
+      pint('No Image selected');
+      emit(AppGetCameraImageErrorState());
+    }
+  }
+
+  void undoGetStoryImage() {
+    storyImageFile = null;
+    emit(AppUndoGetProfileImageSuccessState());
   }
 
   void getGalleryProfileImage() async {
@@ -926,4 +952,72 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppSignOutErrorState(error.toString()));
     });
   }
+
+  int currentIndex = 0;
+  double bottomSheetHeight = 350;
+
+  List<Widget> appTitles = [
+    const Text('Feeds'),
+    const Text('Chats'),
+    const Text('Profile'),
+  ];
+
+  void changeBottomSheetHeight() {
+    if (bottomSheetHeight == 350) {
+      bottomSheetHeight = 700;
+    } else {
+      bottomSheetHeight = 350;
+    }
+    emit(AppChangeBSHeightState());
+  }
+
+  void changeIndex(index) {
+    currentIndex = index;
+    if (index == 1) {
+      getAllUsers();
+    }
+    if (index == 2) {
+      getPosts();
+    }
+    emit(AppChangeBNBState());
+  }
+
+  List<BottomNavigationBarItem> items = [
+    const BottomNavigationBarItem(icon: Icon(IconBroken.Home), label: 'Home'),
+    const BottomNavigationBarItem(icon: Icon(IconBroken.Chat), label: 'Chats'),
+    const BottomNavigationBarItem(
+        icon: Icon(IconBroken.Profile), label: 'Profile')
+  ];
+
+  List<Widget> screens = [
+    const FeedsScreen(),
+    const ChatsScreen(),
+    const ProfileScreen(),
+  ];
+
+  void endBoarding(context) {
+    CacheHelper.putData('lastPage', lastPage!).then((value) {
+      if (value) {
+        navigate2(context, const LoginScreen());
+      }
+    }).catchError((onError) {});
+  }
+
+  List<BoardingModel> boarding = [
+    BoardingModel(
+      title: 'communicate with your friends',
+      body: 'reach your friends easily and professionally ',
+      image: 'assets/images/communicate.png',
+    ),
+    BoardingModel(
+      title: 'Show your self to the world',
+      body: 'Keep the world in backup with your latest updates',
+      image: 'assets/images/show-yourself-poster.jpg',
+    ),
+    BoardingModel(
+      title: 'See the latest news ',
+      body: 'Stay notified with the trending news around the world',
+      image: 'assets/images/unnamed.jpg',
+    ),
+  ];
 }
