@@ -61,7 +61,7 @@ Widget buildStoryItem({
   );
 }
 
-Widget buildFirstStoryItem({ LoginModel? loginModel, context}) {
+Widget buildFirstStoryItem({ required LoginModel loginModel, context}) {
   return Stack(
     alignment: AlignmentDirectional.center,
     children: [
@@ -72,7 +72,7 @@ Widget buildFirstStoryItem({ LoginModel? loginModel, context}) {
           color: Colors.deepPurple,
           borderRadius: BorderRadius.circular(20),
           image: DecorationImage(
-              image: NetworkImage(loginModel!.profileImage), fit: BoxFit.cover),
+              image: NetworkImage(loginModel.profileImage), fit: BoxFit.cover),
         ),
       ),
       CircleAvatar(
