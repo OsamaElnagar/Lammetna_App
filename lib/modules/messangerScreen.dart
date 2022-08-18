@@ -83,38 +83,34 @@ class MessengerScreen extends StatelessWidget {
                   height: 20,
                 ),
                 if (cubit.messageImageFile != null)
-                  Stack(
-                    alignment: AlignmentDirectional.bottomCenter,
-                    children: [
-                      Align(
-                        alignment: AlignmentDirectional.topCenter,
-                        child: Stack(
-                          alignment: AlignmentDirectional.topEnd,
-                          children: [
-                            Container(
-                              height: 60,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(20)),
-                                  image: DecorationImage(
-                                    image: FileImage(cubit.messageImageFile!),
-                                  )),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: CircleAvatar(
-                                  radius: 20,
-                                  child: IconButton(
-                                      onPressed: () {
-                                        cubit.undoGetMessageImage();
-                                      },
-                                      icon: const Icon(Icons.close))),
-                            )
-                          ],
+                  Expanded(
+                    child: Stack(
+                      alignment: AlignmentDirectional.topEnd,
+                      children: [
+                        Container(
+                          width: 280,
+                          height: 350,
+                          clipBehavior: Clip.antiAliasWithSaveLayer,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                             ),
+                          child: Image(
+                            image: FileImage(cubit.messageImageFile!),
+                            fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-                    ],
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: CircleAvatar(
+                              radius: 20,
+                              child: IconButton(
+                                  onPressed: () {
+                                    cubit.undoGetMessageImage();
+                                  },
+                                  icon: const Icon(Icons.close))),
+                        )
+                      ],
+                    ),
                   ),
                 const SizedBox(
                   height: 10,
@@ -135,6 +131,7 @@ class MessengerScreen extends StatelessWidget {
                                 suffixIcon: InkWell(
                                   onTap: () {
                                     showModalBottomSheet(
+                                    backgroundColor: Colors.black54,
                                         context: context,
                                         builder: (context) {
                                           return SizedBox(
@@ -152,13 +149,18 @@ class MessengerScreen extends StatelessWidget {
                                                             .getCameraMessageImage();
                                                       },
                                                       icon: const Icon(
-                                                          IconBroken.Camera),
+                                                          IconBroken.Camera,
+                                                        size: 35,
+                                                        color: Colors.blue,
+                                                      ),
                                                     ),
-                                                    const Text('Camera'),
+                                                    const Text('Camera',
+                                                      style: TextStyle(color: Colors.blue),
+                                                    ),
                                                   ],
                                                 ),
                                                 const SizedBox(
-                                                  width: 10,
+                                                  width: 30,
                                                 ),
                                                 Column(
                                                   children: [
@@ -168,9 +170,12 @@ class MessengerScreen extends StatelessWidget {
                                                             .getGalleryMessageImage();
                                                       },
                                                       icon: const Icon(
-                                                          IconBroken.Image_2),
+                                                          IconBroken.Image_2,
+                                                        size: 35,
+                                                        color: Colors.deepPurple,),
                                                     ),
-                                                    const Text('Gallery'),
+                                                    const Text('Gallery',
+                                                      style: TextStyle(color: Colors.deepPurple),),
                                                   ],
                                                 ),
                                               ],
@@ -215,17 +220,19 @@ class MessengerScreen extends StatelessWidget {
                                 textMessage: messageController.text,
                                 messageDateTime:   DateTime.now().toLocal().toString(),
                               );
+                              cubit.undoGetMessageImage();
                             } else {
                               cubit.senMessage(
                                 receiverId: loginModel.uId,
                                 textMessage: messageController.text,
                                 messageDateTime:  DateTime.now().toLocal().toString(),
                               );
+                              cubit.undoGetMessageImage();
                             }
                           }
                           messageController.clear();
                           FocusScope.of(context).unfocus();
-                        },  icon: const Icon(IconBroken.Send), ),
+                        },  icon: const Icon(IconBroken.Send,color: Colors.white,), ),
                       ),
                     ),
                     const SizedBox(
