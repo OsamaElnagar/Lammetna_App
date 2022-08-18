@@ -2,13 +2,11 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:social_app/homeLayout/homeLayout.dart';
 import 'package:social_app/modules/loginScreen.dart';
 import 'package:social_app/shared/bloc/registerCubit/cubit.dart';
 import 'package:social_app/shared/bloc/registerCubit/states.dart';
 import 'package:social_app/shared/components/components.dart';
 
-import '../shared/bloc/loginCubit/cubit.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({Key? key}) : super(key: key);
@@ -29,9 +27,8 @@ class RegisterScreen extends StatelessWidget {
             navigate2(context, const LoginScreen());
             showToast(msg: 'Joined successfully', state: ToastStates.success);
           }
-          if(state is RegisterCreateUserErrorState){
+          if (state is RegisterCreateUserErrorState) {
             showToast(msg: 'Invalid data', state: ToastStates.error);
-
           }
         },
         builder: (context, state) {
@@ -354,7 +351,8 @@ class RegisterScreen extends StatelessWidget {
                                               .validate()) {
                                             RegisterCubit.get(context)
                                                 .userRegister(
-                                              name: nameController.text.replaceAll(' ', ''),
+                                              name: nameController.text
+                                                  .replaceAll(' ', ''),
                                               phone: phoneController.text,
                                               email: emailController.text,
                                               password: passwordController.text,

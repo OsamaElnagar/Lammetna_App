@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => AppCubit(AppInitialState())
             ..getUserData()
-            ..getAllUsers()
+            ..getStory()
             ..getFeedPosts(),
         ),
       ],

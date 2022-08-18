@@ -231,3 +231,32 @@ class AppUpdateProfileErrorState extends AppStates {
 
   AppUpdateProfileErrorState(this.error);
 }
+
+class AppCreateStoryLoadingState extends AppStates {}
+
+class AppCreateStorySuccessState extends AppStates {}
+
+class AppCreateStoryErrorState extends AppStates {
+  final String error;
+
+  AppCreateStoryErrorState(this.error);
+}
+
+class AppCreateStoryImageLoadingState extends AppStates {}
+
+class AppCreateStoryImageSuccessState extends AppStates {}
+
+class AppCreateStoryImageErrorState extends AppStates {
+  final String error;
+
+  AppCreateStoryImageErrorState(this.error);
+}
+class AppGetStoryLoadingState extends AppStates {}
+
+class AppGetStorySuccessState extends AppStates {}
+
+class AppGetStoryErrorState extends AppStates {
+  final String error;
+
+  AppGetStoryErrorState(this.error);
+}

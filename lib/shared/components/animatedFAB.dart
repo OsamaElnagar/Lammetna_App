@@ -5,6 +5,7 @@ import 'package:social_app/shared/components/components.dart';
 
 import '../../modules/EditProfileScreen.dart';
 import '../../modules/postScreen.dart';
+import '../../modules/storyScreen.dart';
 import '../styles/colors.dart';
 import '../styles/iconBroken.dart';
 
@@ -254,6 +255,7 @@ class _AnimatedFeedsFABState extends State<AnimatedFeedsFAB>
                 ),
                 child: IconButton(
                     onPressed: () {
+                      navigateTo(context, NewStoryScreen());
                       collapseFAB();
                     },
                     icon: const Icon(
