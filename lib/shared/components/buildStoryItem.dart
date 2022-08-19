@@ -1,3 +1,4 @@
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:social_app/models/loginModel.dart';
@@ -65,15 +66,19 @@ Widget buildFirstStoryItem({ required LoginModel loginModel, context}) {
   return Stack(
     alignment: AlignmentDirectional.center,
     children: [
-      Container(
-        height: 250,
-        width: 150,
-        decoration: BoxDecoration(
-          color: Colors.deepPurple,
-          borderRadius: BorderRadius.circular(20),
-          image: DecorationImage(
-              image: NetworkImage(loginModel.profileImage), fit: BoxFit.cover),
+      ConditionalBuilder(
+        condition: loginModel.profileImage.isNotEmpty,
+        builder:(context)=> Container(
+          height: 250,
+          width: 150,
+          decoration: BoxDecoration(
+            color: Colors.deepPurple,
+            borderRadius: BorderRadius.circular(20),
+            image: DecorationImage(
+                image: NetworkImage(loginModel.profileImage), fit: BoxFit.cover),
+          ),
         ),
+        fallback:(context)=> const Center(child: CircularProgressIndicator()),
       ),
       CircleAvatar(
         radius: 30,

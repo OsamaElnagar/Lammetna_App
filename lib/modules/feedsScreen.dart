@@ -83,7 +83,7 @@ class FeedsScreen extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          if(state is AppGetUserDataSuccessState)
+
                           buildFirstStoryItem(
                               context: context, loginModel: cubit.loginModel!),
                           const SizedBox(
