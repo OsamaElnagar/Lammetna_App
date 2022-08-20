@@ -417,7 +417,7 @@ class AppCubit extends Cubit<AppStates> {
     feedPosts.clear();
     feedPostId.clear();
     emit(AppGetFeedPostLoadingState());
-    FirebaseFirestore.instance.collection('posts').get().then((value) {
+    FirebaseFirestore.instance.collection('posts').orderBy('postDate').get().then((value) {
       for (var element in value.docs) {
         feedPostId.add(element.id);
         pint(feedPostId.toString());

@@ -6,9 +6,10 @@ import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import '../styles/iconBroken.dart';
 
 Widget buildSentMessageItem({required ChatsModel chatsModel}) {
-  var date = DateTime.now();
+
   String messageDateTime = chatsModel.messageDateTime;
-  messageDateTime = DateFormat.E().add_jm().format(date);
+  messageDateTime = DateFormat.E()
+      .add_jm().format(DateTime.parse(messageDateTime));
   // ==> 'Thu, 5/23/2013 10:21:47 AM'
   return Align(
     alignment: AlignmentDirectional.topEnd,
@@ -158,9 +159,9 @@ Widget buildSentMessageItem({required ChatsModel chatsModel}) {
 }
 
 Widget buildReceivedMessageItem({required ChatsModel chatsModel}) {
-  var date = DateTime.now();
   String messageDateTime = chatsModel.messageDateTime;
-  messageDateTime = DateFormat.E().add_jm().format(date);
+  messageDateTime = DateFormat.E()
+      .add_jm().format(DateTime.parse(messageDateTime));
   // ==> 'Thu, 5/23/2013 10:21:47 AM'
   return Align(
     alignment: AlignmentDirectional.topStart,
@@ -183,16 +184,12 @@ Widget buildReceivedMessageItem({required ChatsModel chatsModel}) {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(left: 8.0,right: 2,top: 2,bottom: 2),
                   child: Text(
                     chatsModel.textMessage,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
-
-                // i will send the time without formating and
-                // when i get it i will formate it before displaying it.
-                //////////////////////////////////////////////////////////////////////////////////////////
                 Padding(
                   padding: const EdgeInsets.only(
                       left: 20.0, right: 2.0, top: 8.0, bottom: 8.0),

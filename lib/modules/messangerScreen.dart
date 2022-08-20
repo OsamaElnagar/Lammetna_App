@@ -73,7 +73,7 @@ class MessengerScreen extends StatelessWidget {
                         },
                         separatorBuilder: (context, index) {
                           return const SizedBox(
-                            height: 10,
+                            height: 5,
                           );
                         },
                         itemCount: cubit.messages.length),

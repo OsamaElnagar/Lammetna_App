@@ -84,8 +84,12 @@ class FeedsScreen extends StatelessWidget {
                       child: Row(
                         children: [
 
-                          buildFirstStoryItem(
-                              context: context, loginModel: cubit.loginModel!),
+                          ConditionalBuilder(
+                            condition: cubit.loginModel !=null,
+                            builder:(context)=> buildFirstStoryItem(
+                                context: context, loginModel: cubit.loginModel!),
+                            fallback: (context)=>const Center(child:  CircularProgressIndicator()),
+                          ),
                           const SizedBox(
                             width: 2,
                           ),
@@ -106,7 +110,7 @@ class FeedsScreen extends StatelessWidget {
                                 width: 2,
                               ),
                             ),
-                          fallback: (context)=>SizedBox(),
+                          fallback: (context)=>const SizedBox(),
                           ),
                         ],
                       ),
@@ -116,7 +120,7 @@ class FeedsScreen extends StatelessWidget {
                 ConditionalBuilder(
                   condition: AppCubit.get(context).feedPosts.isNotEmpty,
                   builder: (context) => ListView.separated(
-                      physics: const NeverScrollableScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
@@ -151,7 +155,7 @@ class FeedsScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 70,
                 ),
               ],
             ),

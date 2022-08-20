@@ -97,7 +97,7 @@ Widget buildFirstStoryItem({ required LoginModel loginModel, context}) {
   );
 }
 
-Widget gestureItem({required Function() onTap, icon}) {
+Widget gestureItem({required Function() onTap, icon,required Color iconColor}) {
   return Container(
     height: 80,
     decoration: BoxDecoration(
@@ -108,7 +108,7 @@ Widget gestureItem({required Function() onTap, icon}) {
       onTap: onTap,
       child: Icon(
         icon,
-        color: Colors.white,
+        color: iconColor,
         size: 40,
       ),
     ),
