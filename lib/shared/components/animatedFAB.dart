@@ -845,6 +845,7 @@ class _AnimatedProfileFABState extends State<AnimatedProfileFAB>
                 child: IconButton(
                     onPressed: () {
                       collapseFAB();
+                      navigateTo(context, NewStoryScreen());
                     },
                     icon: const Icon(
                       IconBroken.Document,

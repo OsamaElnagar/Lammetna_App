@@ -79,6 +79,7 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
                               AppCubit.get(context).getGalleryStoryImage();
                             },
                             icon: IconBroken.Image,
+                            iconColor: Colors.amber,
                           ),
                         ),
                         const SizedBox(
@@ -92,7 +93,9 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
                                 });
                                 AppCubit.get(context).getCameraStoryImage();
                               },
-                              icon: IconBroken.Camera),
+                              icon: IconBroken.Camera,
+                            iconColor: Colors.blue,
+                          ),
                         ),
                         const SizedBox(
                           width: 4,
@@ -106,7 +109,9 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
                                 FocusScope.of(context)
                                     .requestFocus(txtStoryNode);
                               },
-                              icon: IconBroken.Edit_Square),
+                              icon: IconBroken.Edit_Square,
+                            iconColor: Colors.amber,
+                          ),
                         ),
                       ],
                     ),
@@ -190,6 +195,10 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
                       ),
                     ],
                   ),
+                const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text('i will ask for storage permission \nfrom user to disp local images here'),
+                ),
               ],
             ),
           ),

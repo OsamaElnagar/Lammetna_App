@@ -50,6 +50,8 @@ class _NewPostScreenState extends State<NewPostScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if(state is AppCreatePostLoadingState)
+                  const LinearProgressIndicator(),
                 Column(
                   children: [
                     Padding(
@@ -106,8 +108,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                 ),
                 Column(
                   children: [
-                    if (whileCreatingPost ||
-                        AppCubit.get(context).postImageFile != null)
+                    if (whileCreatingPost || postImageFile != null)
                       TextButton(
                         onPressed: () {
                           showDialog(
@@ -127,35 +128,40 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                               ElevatedButton(
                                                 onPressed: () {
                                                   if (postText != '' ||
-                                                      AppCubit.get(context)
-                                                              .postImageFile !=
-                                                          null) {
-                                                    var date = DateTime.now();
-                                                    String postDate =
-                                                        DateFormat.yMMMMd()
-                                                            .format(date);
-                                                    if (AppCubit.get(context)
-                                                            .postImageFile !=
-                                                        null) {
+                                                      postImageFile != null) {
+                                                    if (postImageFile != null) {
                                                       AppCubit.get(context)
                                                           .uploadPostWithImage(
                                                         postText: postText,
-                                                        postDate: postDate,
+                                                        postDate: DateTime.now()
+                                                            .toLocal()
+                                                            .toString(),
                                                       );
                                                     } else {
+                                                      AppCubit.get(context)
+                                                          .createFeedPost(
+                                                        postText: postText,
+                                                        postDate: DateTime.now()
+                                                            .toLocal()
+                                                            .toString(),
+                                                      );
                                                       AppCubit.get(context)
                                                           .createPost(
                                                               postText:
                                                                   postText,
-                                                              postDate:
-                                                                  postDate,
+                                                              postDate: DateTime
+                                                                      .now()
+                                                                  .toLocal()
+                                                                  .toString(),
                                                               context: context);
                                                     }
                                                     AppCubit.get(context)
                                                         .clearPostImagesList();
                                                     postText = '';
-                                                    navigate2(context,
-                                                        const HomeLayout());
+                                                    Future.delayed(Duration(seconds: 3,),() {
+                                                      navigate2(context,
+                                                          const HomeLayout());
+                                                    }, );
                                                   }
                                                 },
                                                 child: const Text(
@@ -351,22 +357,20 @@ class _NewPostScreenState extends State<NewPostScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (postText != '' ||
-                          AppCubit.get(context).postImageFile != null) {
-                        var date = DateTime.now();
-                        String postDate = DateFormat.yMMMMd().format(date);
-                        if (AppCubit.get(context).postImageFile != null) {
+                          postImageFile!= null) {
+                        if (postImageFile != null) {
                           AppCubit.get(context).uploadPostWithImage(
                             postText: postText,
-                            postDate: postDate,
+                            postDate: DateTime.now().toLocal().toString(),
                           );
                         } else {
-                          AppCubit.get(context).createPost(
-                              postText: postText,
-                              postDate: postDate,
-                              context: context);
                           AppCubit.get(context).createFeedPost(
                               postText: postText,
-                              postDate: postDate,
+                              postDate: DateTime.now().toLocal().toString(),
+                              context: context);
+                          AppCubit.get(context).createPost(
+                              postText: postText,
+                              postDate: DateTime.now().toLocal().toString(),
                               context: context);
                         }
                         AppCubit.get(context).clearPostImagesList();
