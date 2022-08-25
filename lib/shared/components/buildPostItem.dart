@@ -4,22 +4,25 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:social_app/models/loginModel.dart';
 import 'package:social_app/models/postModel.dart';
-import 'package:social_app/modules/coomentScreen.dart';
+import 'package:social_app/modules/commentScreen.dart';
+import 'package:social_app/modules/profileScreen.dart';
 import 'package:social_app/shared/components/components.dart';
 import 'package:social_app/shared/components/constants.dart';
+import '../../modules/visitedProfileScreen.dart';
 import '../bloc/AppCubit/cubit.dart';
 import '../styles/iconBroken.dart';
 
-Widget buildPostItem({context, required PostModel postModel, index}) {
+Widget buildPostItem({
+  context,
+  required PostModel postModel,
+  // required LoginModel loginModel,
+  index,
+}) {
   double iconSize = 33;
-  var likedForFirstTime = false;
-/////////////////////////////////////////////
   String postDate = postModel.postDate;
   postDate = DateFormat.yMMMMEEEEd().format(DateTime.parse(postDate));
-
-/////////////////////////////////////////////
-
   var cubit = AppCubit.get(context);
+  // Map<String, dynamic> user = {};
   return Card(
     clipBehavior: Clip.antiAliasWithSaveLayer,
     elevation: 5.0,
@@ -30,10 +33,18 @@ Widget buildPostItem({context, required PostModel postModel, index}) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 2, right: 2, bottom: 4, top: 4),
+            padding:
+                const EdgeInsets.only(left: 2, right: 2, bottom: 4, top: 4),
             child: InkWell(
-              onTap: (){
-                pint('Profile no:$index clicked' );
+              onTap: () {
+                pint('Profile no:$index clicked');
+                pint(postModel.postUid);
+
+                if (postModel.postUid == cubit.loginModel!.uId) {
+                  navigateTo(context, const ProfileScreen());
+                } else {
+                  cubit.searchForUser(uId: postModel.postUid, context: context);
+                }
               },
               child: Row(
                 children: [
@@ -56,14 +67,17 @@ Widget buildPostItem({context, required PostModel postModel, index}) {
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 6,
                         ),
-                        Text(postDate,style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: 11,
-                          height: .6,
-                        ),)
+                        Text(
+                          postDate,
+                          style: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 11,
+                            height: .6,
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -260,7 +274,8 @@ Widget buildPostItem({context, required PostModel postModel, index}) {
                       return InkWell(
                         onTap: () {
                           cubit.likeFeedPost(
-                              feedPostId: cubit.feedPostId[index], liked: false);
+                              feedPostId: cubit.feedPostId[index],
+                              liked: false);
                         },
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
@@ -363,7 +378,8 @@ Widget buildPostItem({context, required PostModel postModel, index}) {
                       InkWell(
                         onTap: () {
                           postIndex = index;
-                          cubit.getComments(feedPostId: cubit.feedPostId[index]);
+                          cubit.getComments(
+                              feedPostId: cubit.feedPostId[index]);
                           // cubit.getStoredReply(postId: cubit.feedPostId[commentIndex]);
                           navigateTo(context, const CommentsScreen());
                         },
@@ -639,7 +655,11 @@ Widget testPostItem(
   );
 }
 
-Widget buildProfilePostItem({context, required PostModel postModel, index}) {
+Widget buildProfilePostItem({
+  context,
+  required PostModel postModel,
+  index,
+}) {
   double iconSize = 33;
   var cubit = AppCubit.get(context);
   String postDate = postModel.postDate;
@@ -648,7 +668,6 @@ Widget buildProfilePostItem({context, required PostModel postModel, index}) {
   return Card(
     clipBehavior: Clip.antiAliasWithSaveLayer,
     elevation: 5.0,
-
     child: Padding(
       padding: const EdgeInsets.all(4.0),
       child: Column(
@@ -656,7 +675,8 @@ Widget buildProfilePostItem({context, required PostModel postModel, index}) {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 2, right: 2, bottom: 4, top: 4),
+            padding:
+                const EdgeInsets.only(left: 2, right: 2, bottom: 4, top: 4),
             child: Row(
               children: [
                 CircleAvatar(
@@ -678,12 +698,12 @@ Widget buildProfilePostItem({context, required PostModel postModel, index}) {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 7,
                       ),
                       Text(
                         postDate,
-                        style: TextStyle(
+                        style: const TextStyle(
                           color: Colors.grey,
                           fontSize: 11,
                           height: .6,
@@ -1022,7 +1042,6 @@ Widget buildProfilePostItem({context, required PostModel postModel, index}) {
                                   '0',
                                   style: TextStyle(color: Colors.white),
                                 );
-
                               } else {
                                 return Text(
                                   snapshot.data!.docs.length.toString(),

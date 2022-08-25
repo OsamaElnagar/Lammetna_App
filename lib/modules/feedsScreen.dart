@@ -36,35 +36,72 @@ class FeedsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Card(
-                  child: Stack(
-                    children: [
-                      const SizedBox(
-                        width: double.infinity,
-                        height: 220,
-                        child: Card(
-                          color: Colors.deepPurple,
-                          child: Image(
-                            image: AssetImage('assets/images/Dark Logo.png'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 300,
-                        height: 50,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Card(
-                            color: Colors.white,
-                            child: Text(
-                              'Scroll down to see what people do...',
-                              style: GoogleFonts.lobster(
-                                  fontSize: 20, fontWeight: FontWeight.w500),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 250.0,
+                    child: Stack(
+                      alignment:AlignmentDirectional.topStart,
+                      children: [
+                       Container(
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(colors: [
+                              Colors.blue,
+                              Colors.deepPurple,
+                              ],
                             ),
                           ),
+                       ),
+                        Align(
+                          alignment: AlignmentDirectional.bottomStart,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Card(
+                                color: Colors.white.withOpacity(.4),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Scroll down to see what people do...',
+                                    style: GoogleFonts.lobster(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Card(
+                                color: Colors.white.withOpacity(.4),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Text(
+                                    'Or you can tell us what\'s in your mind!',
+                                    style: GoogleFonts.lobster(
+                                        fontSize: 20, fontWeight: FontWeight.w500,
+                                        color: Colors.white,),
+                                  ),
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(2.0),
+                                    child: CircleAvatar(
+                                      radius: 30,
+                                      backgroundImage: NetworkImage(
+                                          cubit.loginModel!.profileImage
+                                      ),
+                                    ),
+                                  ),
+
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+
+                      ],
+                    ),
                   ),
                 ),
                 Padding(
@@ -83,20 +120,20 @@ class FeedsScreen extends StatelessWidget {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-
                           ConditionalBuilder(
-                            condition: cubit.loginModel !=null,
-                            builder:(context)=> buildFirstStoryItem(
-                                context: context, loginModel: cubit.loginModel!),
-                            fallback: (context)=>const Center(child:  CircularProgressIndicator()),
+                            condition: cubit.loginModel != null,
+                            builder: (context) => buildFirstStoryItem(
+                                context: context,
+                                loginModel: cubit.loginModel!),
+                            fallback: (context) => const Center(
+                                child: CircularProgressIndicator()),
                           ),
                           const SizedBox(
                             width: 2,
                           ),
-
                           ConditionalBuilder(
-                            condition:cubit.stories.isNotEmpty,
-                            builder:(context)=> ListView.separated(
+                            condition: cubit.stories.isNotEmpty,
+                            builder: (context) => ListView.separated(
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
@@ -106,11 +143,12 @@ class FeedsScreen extends StatelessWidget {
                                     storyModel: cubit.stories[index]);
                               },
                               itemCount: cubit.stories.length,
-                              separatorBuilder: (context, index) => const SizedBox(
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(
                                 width: 2,
                               ),
                             ),
-                          fallback: (context)=>const SizedBox(),
+                            fallback: (context) => const SizedBox(),
                           ),
                         ],
                       ),
@@ -125,7 +163,8 @@ class FeedsScreen extends StatelessWidget {
                       shrinkWrap: true,
                       itemBuilder: (context, index) {
                         return buildPostItem(
-                          postModel: AppCubit.get(context).feedPosts[index],
+                          postModel: cubit.feedPosts[index],
+                          // loginModel: cubit.allUsers[index],
                           context: context,
                           index: index,
                         );

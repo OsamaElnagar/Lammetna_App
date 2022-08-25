@@ -297,3 +297,18 @@ class AppGetMessageErrorState extends AppStates {
 
   AppGetMessageErrorState(this.error);
 }
+
+class AppSearchForUserLoadingState extends AppStates {}
+class AppSearchForUserSuccessState extends AppStates {}
+class AppSearchForUserErrorState extends AppStates {
+  final String error;
+
+  AppSearchForUserErrorState(this.error);
+}
+class AppGetVisitedUserPostsLoadingState extends AppStates {}
+class AppGetVisitedUserPostsSuccessState extends AppStates {}
+class AppGetVisitedUserPostsErrorState extends AppStates {
+  final String error;
+
+  AppGetVisitedUserPostsErrorState(this.error);
+}

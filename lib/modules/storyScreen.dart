@@ -40,9 +40,9 @@ class _NewStoryScreenState extends State<NewStoryScreen> {
                   if (storyImageFile != null || storyText != '') {
                     if (storyImageFile != null) {
                       AppCubit.get(context).createStoryWithImage(
-                          storyText: storyText, storyDate: 'storyDate');
+                          storyText: storyText, storyDate: DateTime.now().toLocal().toString());
                     }else{
-                      AppCubit.get(context).createStory(storyDate: 'storyDate', storyText: storyText);
+                      AppCubit.get(context).createStory(storyDate: DateTime.now().toLocal().toString(), storyText: storyText);
                     }
                   }
                   storyText = '';

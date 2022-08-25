@@ -2,21 +2,16 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:social_app/modules/postScreen.dart';
 import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
-import 'package:social_app/shared/components/components.dart';
-import '../shared/components/buildPostItem.dart';
+import 'package:social_app/shared/components/buildPostItem.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+import '../shared/components/components.dart';
 
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
+class VisitedProfileScreen extends StatelessWidget {
+  Map<String, dynamic> user;
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  double bottomSheetHeight = 350;
+  VisitedProfileScreen({Key? key, required this.user}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,22 +19,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       listener: (context, state) {},
       builder: (context, state) {
         var cubit = AppCubit.get(context);
-        var profileModel = AppCubit.get(context).loginModel;
         return Scaffold(
-          body: RefreshIndicator(
-            color: Colors.deepPurple,
-            onRefresh: () {
-              return Future.delayed(
-                const Duration(milliseconds: 1800),
-                () {
-                  cubit.getUserData();
-                  cubit.getPosts();
-                },
-              );
-            },
-            child: SingleChildScrollView(
-              child: SafeArea(
-                top: true,
+          body: SafeArea(
+            child: RefreshIndicator(
+              color: Colors.deepPurple,
+              onRefresh: () {
+                return Future.delayed(
+                  const Duration(milliseconds: 1800),
+                  () {
+                    cubit.getUserData();
+                    cubit.getPosts();
+                  },
+                );
+              },
+              child: SingleChildScrollView(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
@@ -64,8 +57,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   child: Card(
                                     color: Colors.deepPurple,
                                     child: Image(
-                                      image: NetworkImage(
-                                          profileModel!.profileCover),
+                                      image: NetworkImage(user['profileCover']),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -78,8 +70,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       radius: 65,
                                       child: CircleAvatar(
                                         radius: 62,
-                                        backgroundImage: NetworkImage(
-                                            profileModel.profileImage),
+                                        backgroundImage:
+                                            NetworkImage(user['profileImage']),
                                       ),
                                     ),
                                   ),
@@ -92,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 5.0,
                         ),
                         Text(
-                          profileModel.name,
+                          user['name'],
                           style: GoogleFonts.actor(
                               fontSize: 20.0, fontWeight: FontWeight.bold),
                         ),
@@ -102,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text(
-                            profileModel.bio,
+                            user['bio'],
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: GoogleFonts.actor(
@@ -112,58 +104,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(
                           height: 5.0,
                         ),
-                      ],
-                    ),
-                    Text(
-                      'Your Posts',
-                      style: GoogleFonts.allerta(fontSize: 30),
-                    ),
-                    ConditionalBuilder(
-                      condition: cubit.myPosts.isNotEmpty,
-                      builder: (context) => ListView.separated(
-                          physics: const NeverScrollableScrollPhysics(),
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemBuilder: (context, index) {
-                            return buildProfilePostItem(
-                                postModel: cubit.myPosts[index],
-                                context: context,
-                                index: index);
-                          },
-                          separatorBuilder: (context, index) {
-                            return Container(
-                              width: double.infinity,
-                              height: 1,
-                              color: Colors.black.withOpacity(.5),
-                            );
-                          },
-                          itemCount: cubit.myPosts.length),
-                      fallback: (context) => Column(
-                        children: [
-                          const Icon(
-                            Icons.heart_broken_outlined,
-                            size: 150,
-                            color: Colors.black54,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'It seems like you are new here,Try adding new post to let people now you are here',
-                              style: GoogleFonts.allertaStencil(
-                                  color: Colors.black87),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            'Posts',
+                            style: GoogleFonts.alef(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              navigateTo(context, const NewPostScreen());
-                            },
-                            child: const Text('Ok, Let\'s go.'),
+                        ),
+                        ConditionalBuilder(
+                          condition: cubit.visitedUserPosts.isNotEmpty,
+                          builder:(context)=> ListView.separated(
+                            physics: const NeverScrollableScrollPhysics(),
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) => buildProfilePostItem(
+                              postModel: cubit.visitedUserPosts[index],
+                              index: index,
+                              context: context,
+                            ),
+                            separatorBuilder: (context, index) => const SizedBox(
+                              height: 2,
+                            ),
+                            itemCount: cubit.visitedUserPosts.length,
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 70,
+                          fallback: (context) => Column(
+                            children: [
+                              const Icon(
+                                Icons.heart_broken_outlined,
+                                size: 150,
+                                color: Colors.black54,
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'It seems like ${user['name']} doesn\'t have any posts.',
+                                  style: GoogleFonts.allertaStencil(
+                                      color: Colors.black87),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
