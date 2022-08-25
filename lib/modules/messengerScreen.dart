@@ -36,7 +36,7 @@ class MessengerScreen extends StatelessWidget {
                   ),
                   Expanded(
                       child: Text(loginModel.name,
-                          style: TextStyle(fontSize: 16.0),
+                          style: const TextStyle(fontSize: 16.0),
                           overflow: TextOverflow.ellipsis)),
                 ],
               ),

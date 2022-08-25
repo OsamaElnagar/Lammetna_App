@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -11,6 +13,7 @@ import 'package:social_app/models/loginModel.dart';
 import 'package:social_app/models/postModel.dart';
 import 'package:social_app/modules/chatsScreen.dart';
 import 'package:social_app/modules/loginScreen.dart';
+import 'package:social_app/modules/visitedProfileScreen.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/shared/components/components.dart';
@@ -56,9 +59,50 @@ class AppCubit extends Cubit<AppStates> {
   List<StoryModel> stories = [];
   List<String> storyId = [];
   List<ChatsModel> messages = [];
+  Map<String, dynamic> user = {};
+  List<PostModel> visitedUserPosts = [];
+
+  void getVisitedUserPosts({required String uId, context}) {
+    visitedUserPosts.clear();
+    emit(AppGetVisitedUserPostsLoadingState());
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(uId)
+        .collection('posts')
+        .orderBy('postDate')
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        visitedUserPosts.add(PostModel.fromJson(element.data()));
+      }
+      emit(AppGetVisitedUserPostsSuccessState());
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppGetVisitedUserPostsErrorState(onError.toString()));
+    });
+  }
+
+  void searchForUser({required String uId, context}) {
+    user.clear();
+    FirebaseFirestore.instance.collection('users').doc(uId).get().then((value) {
+      user = value.data()!;
+      pint(user['name']);
+      pint(user['profileImage']);
+      pint(user['bio']);
+      getVisitedUserPosts(uId: uId);
+      navigateTo(context, VisitedProfileScreen(user: user));
+      emit(AppSearchForUserSuccessState());
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppSearchForUserErrorState(onError.toString()));
+    });
+
+  }
 
   void getGalleryMessageImage() async {
-    var pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    var pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+    );
     if (pickedFile != null) {
       messageImageFile = File(pickedFile.path);
 
@@ -137,7 +181,7 @@ class AppCubit extends Cubit<AppStates> {
     firebase_storage.FirebaseStorage.instance
         .ref()
         .child(
-        'users/${loginModel!.uId}/Chats/$receiverId/Messages/${Uri.file(messageImageFile!.path).pathSegments.last}')
+            'users/${loginModel!.uId}/Chats/$receiverId/Messages/${Uri.file(messageImageFile!.path).pathSegments.last}')
         .putFile(messageImageFile!)
         .then((value) {
       value.ref.getDownloadURL().then((value) {
@@ -158,17 +202,21 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  void getMessages({required String receiverId}){
-    FirebaseFirestore.instance.collection('users')
-        .doc(loginModel!.uId).collection('chats')
-        .doc(receiverId).collection('messages')
-        .orderBy('messageDateTime').snapshots()
+  void getMessages({required String receiverId}) {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(loginModel!.uId)
+        .collection('chats')
+        .doc(receiverId)
+        .collection('messages')
+        .orderBy('messageDateTime')
+        .snapshots()
         .listen((event) {
-          messages.clear();
-          for(var element in event.docs){
-            messages.add(ChatsModel.fromJson(element.data()));
-          }
-          emit(AppGetMessageSuccessState());
+      messages.clear();
+      for (var element in event.docs) {
+        messages.add(ChatsModel.fromJson(element.data()));
+      }
+      emit(AppGetMessageSuccessState());
     });
   }
 
@@ -401,6 +449,7 @@ class AppCubit extends Cubit<AppStates> {
         .collection('users')
         .doc(uId)
         .collection('posts')
+        .orderBy('postDate')
         .get()
         .then((value) {
       for (var element in value.docs) {
@@ -417,7 +466,11 @@ class AppCubit extends Cubit<AppStates> {
     feedPosts.clear();
     feedPostId.clear();
     emit(AppGetFeedPostLoadingState());
-    FirebaseFirestore.instance.collection('posts').orderBy('postDate').get().then((value) {
+    FirebaseFirestore.instance
+        .collection('posts')
+        .orderBy('postDate')
+        .get()
+        .then((value) {
       for (var element in value.docs) {
         feedPostId.add(element.id);
         pint(feedPostId.toString());

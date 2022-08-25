@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:social_app/models/loginModel.dart';
-import 'package:social_app/modules/messangerScreen.dart';
+import 'package:social_app/modules/messengerScreen.dart';
 import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
 import 'package:social_app/shared/components/components.dart';
@@ -62,7 +62,9 @@ class _ChatsScreenState extends State<ChatsScreen> {
                   itemBuilder: (context, index) => buildChatItem(
                       loginModel: AppCubit.get(context).allUsers[index],
                       index: index),
-                  separatorBuilder: (context, index) => const SizedBox(),
+                  separatorBuilder: (context, index) => const SizedBox(
+                    height: 2,
+                  ),
                   itemCount: AppCubit.get(context).allUsers.length,
                 ),
               ],
