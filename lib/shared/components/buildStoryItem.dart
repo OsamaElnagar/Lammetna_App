@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:social_app/models/loginModel.dart';
 import 'package:social_app/models/storyModel.dart';
+import 'package:social_app/modules/fullSDisp.dart';
 import 'package:social_app/modules/storyScreen.dart';
 import 'package:social_app/shared/components/components.dart';
 import 'package:social_app/shared/styles/iconBroken.dart';
+import 'constants.dart';
 
 
 Widget buildStoryItem({
@@ -15,7 +17,9 @@ Widget buildStoryItem({
 }) {
   return InkWell(
     onTap: () {
-      pint(index.toString());
+      storyIndex = index;
+      pint(storyIndex.toString());
+      navigateTo(context,const FullScreenStory());
     },
     child: Stack(
       alignment: AlignmentDirectional.topStart,
@@ -33,7 +37,7 @@ Widget buildStoryItem({
               ),
             ),
           ),
-        if (storyModel.storyText != '')
+        if (storyModel.storyText != '' && storyModel.storyImage == '')
           Container(
             height: 250,
             width: 150,
@@ -85,7 +89,7 @@ Widget buildFirstStoryItem({ required LoginModel loginModel, context}) {
         backgroundColor: Colors.black.withOpacity(.7),
         child: GestureDetector(
           onTap: () {
-            navigateTo(context, NewStoryScreen());
+            navigateTo(context, const NewStoryScreen());
           },
           child: const Icon(
             IconBroken.Paper_Plus,
@@ -116,7 +120,7 @@ Widget gestureItem({required Function() onTap, icon,required Color iconColor}) {
 }
 
 CircleBorder d() {
-  return CircleBorder(
+  return const CircleBorder(
     side: BorderSide(width: 2),
   );
 }

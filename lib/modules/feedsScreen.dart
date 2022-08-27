@@ -7,6 +7,7 @@ import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
 import 'package:social_app/shared/components/buildStoryItem.dart';
 import 'package:social_app/shared/components/components.dart';
+import 'package:social_app/shared/components/constants.dart';
 import '../shared/components/buildPostItem.dart';
 
 class FeedsScreen extends StatelessWidget {
@@ -38,19 +39,20 @@ class FeedsScreen extends StatelessWidget {
                 Card(
                   child: SizedBox(
                     width: double.infinity,
-                    height: 250.0,
+                    height: 180.0,
                     child: Stack(
-                      alignment:AlignmentDirectional.topStart,
+                      alignment: AlignmentDirectional.topStart,
                       children: [
-                       Container(
+                        Container(
                           decoration: const BoxDecoration(
-                            gradient: LinearGradient(colors: [
-                              Colors.blue,
-                              Colors.deepPurple,
+                            gradient: LinearGradient(
+                              colors: [
+                                Colors.blue,
+                                Colors.deepPurple,
                               ],
                             ),
                           ),
-                       ),
+                        ),
                         Align(
                           alignment: AlignmentDirectional.bottomStart,
                           child: Column(
@@ -63,8 +65,8 @@ class FeedsScreen extends StatelessWidget {
                                   child: Text(
                                     'Scroll down to see what people do...',
                                     style: GoogleFonts.lobster(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w500,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
                                       color: Colors.white,
                                     ),
                                   ),
@@ -77,29 +79,42 @@ class FeedsScreen extends StatelessWidget {
                                   child: Text(
                                     'Or you can tell us what\'s in your mind!',
                                     style: GoogleFonts.lobster(
-                                        fontSize: 20, fontWeight: FontWeight.w500,
-                                        color: Colors.white,),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.white,
+                                    ),
                                   ),
                                 ),
                               ),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(2.0),
-                                    child: CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage: NetworkImage(
-                                          cubit.loginModel!.profileImage
+                              if (cubit.loginModel != null)
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(2.0),
+                                      child: CircleAvatar(
+                                        radius: 30,
+                                        backgroundImage: NetworkImage(
+                                            cubit.loginModel!.profileImage),
                                       ),
                                     ),
-                                  ),
-
-                                ],
-                              ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        navigateTo(
+                                            context, const NewPostScreen());
+                                      },
+                                      child: const Text(
+                                        'More details',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                             ],
                           ),
                         ),
-
                       ],
                     ),
                   ),
@@ -137,6 +152,7 @@ class FeedsScreen extends StatelessWidget {
                               shrinkWrap: true,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
+                                storyIndex = index;
                                 return buildStoryItem(
                                     context: context,
                                     index: index,

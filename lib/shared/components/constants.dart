@@ -4,6 +4,7 @@ bool? lastPage = false;
 String? uId;
 var postIndex;
 var commentIndex ;
+var storyIndex ;
 bool wannaSearchForUser= false;
 
 

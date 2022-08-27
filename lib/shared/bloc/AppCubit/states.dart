@@ -312,3 +312,6 @@ class AppGetVisitedUserPostsErrorState extends AppStates {
 
   AppGetVisitedUserPostsErrorState(this.error);
 }
+class AppUpdateStoryIndexSuccessState extends AppStates {}
+class AppSwipeLeftState extends AppStates {}
+class AppSwipeRightState extends AppStates {}
