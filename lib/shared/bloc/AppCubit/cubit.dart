@@ -1,4 +1,4 @@
-import 'dart:math';
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -96,7 +96,6 @@ class AppCubit extends Cubit<AppStates> {
       pint(onError.toString());
       emit(AppSearchForUserErrorState(onError.toString()));
     });
-
   }
 
   void getGalleryMessageImage() async {
@@ -1198,4 +1197,20 @@ class AppCubit extends Cubit<AppStates> {
       image: 'assets/images/unnamed.jpg',
     ),
   ];
+
+  void updateStoryIndex({index}) {
+    storyIndex = index;
+    emit(AppUpdateStoryIndexSuccessState());
+  }
+
+  void swipeLeft(){
+    storyIndex=storyIndex-1;
+    emit(AppSwipeLeftState());
+  }
+  void swipeRight(){
+    storyIndex=storyIndex+1;
+    emit(AppSwipeRightState());
+  }
+
+
 }

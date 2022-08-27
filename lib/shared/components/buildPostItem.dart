@@ -2,27 +2,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:readmore/readmore.dart';
 import 'package:social_app/models/loginModel.dart';
 import 'package:social_app/models/postModel.dart';
 import 'package:social_app/modules/commentScreen.dart';
 import 'package:social_app/modules/profileScreen.dart';
 import 'package:social_app/shared/components/components.dart';
 import 'package:social_app/shared/components/constants.dart';
-import '../../modules/visitedProfileScreen.dart';
 import '../bloc/AppCubit/cubit.dart';
 import '../styles/iconBroken.dart';
 
 Widget buildPostItem({
   context,
   required PostModel postModel,
-  // required LoginModel loginModel,
   index,
 }) {
   double iconSize = 33;
   String postDate = postModel.postDate;
   postDate = DateFormat.yMMMMEEEEd().format(DateTime.parse(postDate));
   var cubit = AppCubit.get(context);
-  // Map<String, dynamic> user = {};
+
   return Card(
     clipBehavior: Clip.antiAliasWithSaveLayer,
     elevation: 5.0,
@@ -119,9 +118,10 @@ Widget buildPostItem({
             ),
           ),
           if (postModel.postText != '')
+            //If I have a text whether I have an image or not.
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Text(
+              child: ReadMoreText(
                 postModel.postText,
                 style: const TextStyle(
                   fontSize: 15,
@@ -135,22 +135,240 @@ Widget buildPostItem({
             Stack(
               alignment: AlignmentDirectional.bottomEnd,
               children: [
-                Image(
-                  image: NetworkImage(postModel.postImage!),
-                  fit: BoxFit.cover,
-                  height: 380,
-                  width: double.infinity,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
+                InkWell(
+                  onTap: () {
+                    showBottomSheet(
+                      backgroundColor: Colors.black.withOpacity(.9),
+                      context: context,
+                      builder: (context) => SizedBox(
+                        height: MediaQuery.of(context).size.height - 30,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.more_vert,
+                                    size: 30,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  icon: const Icon(
+                                    Icons.close,
+                                    size: 30,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 4.0),
+                              child: Image(
+                                image: NetworkImage(postModel.postImage!),
+                              ),
+                            ),
+                            if (postModel.postText != '')
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  postModel.postText,
+                                  style: const TextStyle(
+                                      fontSize: 15, color: Colors.white,
+                                  ),
+                                  maxLines:3,
+                                  overflow: TextOverflow.ellipsis,
 
-                    return const Center(
-                        child: CircularProgressIndicator(
-                      color: Colors.deepPurple,
-                    ));
-                    // You can use LinearProgressIndicator or CircularProgressIndicator instead
+                                ),
+                              ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12.0),
+                              child: Container(
+                                color: Colors.black12,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Column(
+                                      children: [
+                                        StreamBuilder<DocumentSnapshot>(
+                                          stream: FirebaseFirestore.instance
+                                              .collection('posts')
+                                              .doc(cubit.feedPostId[index])
+                                              .collection('likes')
+                                              .doc(cubit.loginModel!.uId)
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (!snapshot.hasData) {
+                                              return const Icon(
+                                                IconBroken.Heart,
+                                              );
+                                            }
+                                            if (snapshot.data!.exists) {
+                                              return InkWell(
+                                                onTap: () {
+                                                  cubit.likeFeedPost(
+                                                      feedPostId:
+                                                          cubit.feedPostId[index],
+                                                      liked: true);
+                                                },
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child: Icon(
+                                                    IconBroken.Heart,
+                                                    color: Colors.red,
+                                                    size: iconSize,
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              return InkWell(
+                                                onTap: () {
+                                                  cubit.likeFeedPost(
+                                                      feedPostId:
+                                                          cubit.feedPostId[index],
+                                                      liked: false);
+                                                },
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(4.0),
+                                                  child: Icon(
+                                                    IconBroken.Heart,
+                                                    color: Colors.grey,
+                                                    size: iconSize,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        StreamBuilder<QuerySnapshot>(
+                                          stream: FirebaseFirestore.instance
+                                              .collection('posts')
+                                              .doc(cubit.feedPostId[index])
+                                              .collection('likes')
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              return Text(
+                                                snapshot.data!.docs.length.toString(),
+                                                style: const TextStyle(color: Colors.white),
+                                              );
+                                            } else {
+                                              return const Text(
+                                                '0',
+                                                style: TextStyle(color: Colors.white),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        const Text('likes',
+                                            style:  TextStyle(color: Colors.white)),
+
+
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        InkWell(
+                                          onTap: () {
+                                            postIndex = index;
+                                            cubit.getComments(
+                                                feedPostId:
+                                                cubit.feedPostId[index]);
+                                            // cubit.getStoredReply(postId: cubit.feedPostId[index]);
+                                            navigateTo(
+                                                context, const CommentsScreen());
+                                          },
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Icon(
+                                              IconBroken.More_Square,
+                                              color: Colors.green,
+                                              size: iconSize,
+                                            ),
+                                          ),
+                                        ),
+                                        StreamBuilder<QuerySnapshot>(
+                                          stream: FirebaseFirestore.instance
+                                              .collection('posts')
+                                              .doc(cubit.feedPostId[index])
+                                              .collection('comments')
+                                              .snapshots(),
+                                          builder: (context, snapshot) {
+                                            if (snapshot.hasData) {
+                                              return Text(
+                                                snapshot.data!.docs.length.toString(),
+                                                style: const TextStyle(color: Colors.white),
+                                              );
+                                            } else {
+                                              return const Text(
+                                                '0',
+                                                style: TextStyle(color: Colors.white),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                        const Text('comments',
+                                            style:  TextStyle(color: Colors.white)),
+
+
+                                      ],
+                                    ),
+                                    Column(
+                                      children: [
+                                        InkWell(
+                                          onTap: () {},
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(4.0),
+                                            child: Icon(
+                                              IconBroken.Send,
+                                              color: Colors.blue,
+                                              size: iconSize,
+                                            ),
+                                          ),
+                                        ),
+                                        Text(
+                                          postModel.postShares.toString(),
+                                          style: const TextStyle(color: Colors.white),
+                                        ),
+                                        const Text('shares',
+                                            style:  TextStyle(color: Colors.white)),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
                   },
-                  errorBuilder: (context, error, stackTrace) =>
-                      const Text('Some errors occurred!'),
+                  child: Image(
+                    image: NetworkImage(postModel.postImage!),
+                    fit: BoxFit.cover,
+                    height: 380,
+                    width: double.infinity,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+
+                      return const Center(
+                          child: CircularProgressIndicator(
+                        color: Colors.deepPurple,
+                      ));
+                      // You can use LinearProgressIndicator or CircularProgressIndicator instead
+                    },
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Text('Some errors occurred!'),
+                  ),
                 ),
                 Container(
                   decoration: BoxDecoration(
@@ -238,6 +456,7 @@ Widget buildPostItem({
                 ),
               ],
             ),
+          //Reactions Bar/////////////////////////////////🔽🔽🔽
           if (postModel.postImage != '')
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -494,14 +713,14 @@ Widget buildPostItem({
                 ),
               ],
             ),
+          //Reactions Bar/////////////////////////////////🔼🔼🔼
         ],
       ),
     ),
   );
 }
 
-Widget testPostItem(
-    {context, required String text, required LoginModel loginModel}) {
+Widget testPostItem({context, required String text, required LoginModel loginModel}) {
   return Card(
     clipBehavior: Clip.antiAliasWithSaveLayer,
     elevation: 0.0,

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:social_app/homeLayout/homeLayout.dart';
 import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
@@ -164,9 +163,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                     }, );
                                                   }
                                                 },
-                                                child: const Text(
-                                                  'Post',
-                                                ),
+                                                child: const Text('Post',),
                                               ),
                                               ElevatedButton(
                                                   onPressed: () {
@@ -308,7 +305,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                         ),
                       ),
                       CircleAvatar(
-                        backgroundColor: Colors.black.withOpacity(.4),
+                        backgroundColor: Colors.deepPurple.withOpacity(.8),
                         child: IconButton(
                           onPressed: () {
                             dialogMessage(
