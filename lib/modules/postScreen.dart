@@ -144,15 +144,15 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                             .toLocal()
                                                             .toString(),
                                                       );
-                                                      AppCubit.get(context)
-                                                          .createPost(
-                                                              postText:
-                                                                  postText,
-                                                              postDate: DateTime
-                                                                      .now()
-                                                                  .toLocal()
-                                                                  .toString(),
-                                                              context: context);
+                                                      // AppCubit.get(context)
+                                                      //     .createPost(
+                                                      //         postText:
+                                                      //             postText,
+                                                      //         postDate: DateTime
+                                                      //                 .now()
+                                                      //             .toLocal()
+                                                      //             .toString(),
+                                                      //         context: context);
                                                     }
                                                     AppCubit.get(context)
                                                         .clearPostImagesList();
@@ -365,10 +365,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                               postText: postText,
                               postDate: DateTime.now().toLocal().toString(),
                               context: context);
-                          AppCubit.get(context).createPost(
-                              postText: postText,
-                              postDate: DateTime.now().toLocal().toString(),
-                              context: context);
+                          // AppCubit.get(context).createPost(
+                          //     postText: postText,
+                          //     postDate: DateTime.now().toLocal().toString(),
+                          //     context: context);
                         }
                         AppCubit.get(context).clearPostImagesList();
                         postText = '';

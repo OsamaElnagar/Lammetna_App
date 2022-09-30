@@ -1,13 +1,14 @@
 
 
+import 'package:flutter/material.dart';
+
 bool? lastPage = false;
 String? uId;
 var postIndex;
 var commentIndex ;
 var storyIndex ;
 bool wannaSearchForUser= false;
-
-
+FocusNode modifyPostTextNode = FocusNode();
 
 
 // void printFullText(String text) {

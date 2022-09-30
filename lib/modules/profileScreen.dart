@@ -7,6 +7,8 @@ import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
 import 'package:social_app/shared/components/components.dart';
 import '../shared/components/buildPostItem.dart';
+import '../shared/components/popupMenuItems.dart';
+import 'modifyPostScreen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -17,9 +19,20 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   double bottomSheetHeight = 350;
+  late Offset tapXY;
+  RenderBox? overlay;
+
+  @override
+  void initState() {
+    AppCubit.get(context).getPosts();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox?;
+
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -126,6 +139,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           shrinkWrap: true,
                           itemBuilder: (context, index) {
                             return buildProfilePostItem(
+                                moreVert: InkWell(
+                                  onTapDown: getPosition,
+                                  onTap: () {
+                                    showMenu(
+                                      context: context,
+                                      position: relRectSize,
+                                      items: [
+                                        popupDo(
+                                          onPress: () {
+                                            Navigator.pop(context);
+                                            navigateTo(context, ModifyPostScreen(postModel: cubit.myPosts[index],));
+                                          },
+                                          childLabel: 'Modify',
+                                        ),
+                                        popupDo(
+                                          onPress: () {},
+                                          childLabel: 'Delete',
+                                        ),
+                                        popupDo(
+                                          onPress: () {},
+                                          childLabel: 'invisible',
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(8.0),
+                                    child: Icon(Icons.more_vert),
+                                  ),
+                                ),
                                 postModel: cubit.myPosts[index],
                                 context: context,
                                 index: index);
@@ -173,5 +216,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         );
       },
     );
+  }
+
+  // ↓ create the RelativeRect from size of screen and where you tapped
+  RelativeRect get relRectSize =>
+      RelativeRect.fromSize(tapXY & const Size(40, 40), overlay!.size);
+
+  // ↓ get the tap position Offset
+  void getPosition(TapDownDetails detail) {
+    tapXY = detail.globalPosition;
   }
 }

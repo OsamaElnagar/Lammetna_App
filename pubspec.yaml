@@ -31,6 +31,9 @@ dependencies:
   intl: ^0.17.0
   cached_network_image: ^3.2.1
   readmore: ^2.1.0
+  video_player:
+
+
 
 dev_dependencies:
   flutter_test:

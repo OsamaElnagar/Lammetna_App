@@ -6,6 +6,8 @@ class AppChangeBNBState extends AppStates {}
 
 class AppChangeBSHeightState extends AppStates {}
 
+class AppPlayPauseVideoState extends AppStates {}
+
 class AppGetUserDataLoadingState extends AppStates {}
 
 class AppGetUserDataSuccessState extends AppStates {}
@@ -76,7 +78,7 @@ class AppUndoGetCoverImageSuccessState extends AppStates {}
 
 class AppUndoGetCommentImageSuccessState extends AppStates {}
 
-class AppCleatPostImageListSuccessState extends AppStates {}
+class AppCreatePostImageListSuccessState extends AppStates {}
 
 class AppUndoGetPostImageErrorState extends AppStates {
   final String error;
@@ -273,6 +275,7 @@ class AppWannaSearchErrorState extends AppStates {
 }
 
 class AppSendMessageLoadingState extends AppStates {}
+
 class AppSendMessageSuccessState extends AppStates {}
 
 class AppSendMessageErrorState extends AppStates {
@@ -282,6 +285,7 @@ class AppSendMessageErrorState extends AppStates {
 }
 
 class AppSendMessageWithImageLoadingState extends AppStates {}
+
 class AppSendMessageWithImageSuccessState extends AppStates {}
 
 class AppSendMessageWithImageErrorState extends AppStates {
@@ -299,19 +303,49 @@ class AppGetMessageErrorState extends AppStates {
 }
 
 class AppSearchForUserLoadingState extends AppStates {}
+
 class AppSearchForUserSuccessState extends AppStates {}
+
 class AppSearchForUserErrorState extends AppStates {
   final String error;
 
   AppSearchForUserErrorState(this.error);
 }
+
 class AppGetVisitedUserPostsLoadingState extends AppStates {}
+
 class AppGetVisitedUserPostsSuccessState extends AppStates {}
+
 class AppGetVisitedUserPostsErrorState extends AppStates {
   final String error;
 
   AppGetVisitedUserPostsErrorState(this.error);
 }
+
 class AppUpdateStoryIndexSuccessState extends AppStates {}
+
 class AppSwipeLeftState extends AppStates {}
+
 class AppSwipeRightState extends AppStates {}
+
+
+class AppModifyPostLoadingState extends AppStates {}
+
+class AppModifyPostSuccessState extends AppStates {}
+
+class AppModifyPostErrorState extends AppStates {
+  final String error;
+
+  AppModifyPostErrorState(this.error);
+}
+
+
+class AppFillUsersUIdsLoadingState extends AppStates {}
+
+class AppFillUsersUIdsSuccessState extends AppStates {}
+
+class AppFillUsersUIdsErrorState extends AppStates {
+  final String error;
+
+  AppFillUsersUIdsErrorState(this.error);
+}
