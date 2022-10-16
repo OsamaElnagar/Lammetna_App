@@ -1,6 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:social_app/demo/cubit.dart';
+import 'package:social_app/demo/demoVideo.dart';
+import 'package:social_app/demo/states.dart';
 import 'package:social_app/homeLayout/homeLayout.dart';
 import 'package:social_app/modules/boardingScreen.dart';
 import 'package:social_app/modules/loginScreen.dart';
@@ -10,6 +13,8 @@ import 'package:social_app/shared/components/constants.dart';
 import 'package:social_app/shared/network/local/blocObserver.dart';
 import 'package:social_app/shared/network/local/cache_helper.dart';
 import 'package:social_app/shared/styles/themes.dart';
+
+import 'demo/chewie_demo.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -52,6 +57,7 @@ class MyApp extends StatelessWidget {
             ..getStory()
             ..getFeedPosts(),
         ),
+        BlocProvider(create:(context) => DemoCubit(DemoInitStates()))
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

@@ -32,7 +32,10 @@ dependencies:
   cached_network_image: ^3.2.1
   readmore: ^2.1.0
   video_player:
-
+  chewie: ^1.3.5
+  auto_orientation: ^2.2.1
+  animated_splash_screen: ^1.2.0
+#  visibility_detector: ^0.3.3
 
 
 dev_dependencies:

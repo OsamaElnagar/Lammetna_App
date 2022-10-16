@@ -157,7 +157,7 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                     AppCubit.get(context)
                                                         .clearPostImagesList();
                                                     postText = '';
-                                                    Future.delayed(Duration(seconds: 3,),() {
+                                                    Future.delayed(const Duration(seconds: 2,),() {
                                                       navigate2(context,
                                                           const HomeLayout());
                                                     }, );

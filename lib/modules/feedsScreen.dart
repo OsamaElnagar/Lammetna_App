@@ -2,6 +2,7 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:social_app/demo/demoVideo.dart';
 import 'package:social_app/modules/postScreen.dart';
 import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
@@ -119,7 +120,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                             context, const NewPostScreen());
                                       },
                                       child: const Text(
-                                        'More details',
+                                        'More Details',
                                         style: TextStyle(color: Colors.white),
                                       ),
                                     ),
@@ -128,13 +129,16 @@ class _FeedsScreenState extends State<FeedsScreen> {
                                     ),
                                     ElevatedButton(
                                       onPressed: (){
-                                        cubit.fillUsersUIds();
+                                        navigateTo(
+                                            context, const DemoScreen());
+
+                                        // cubit.fillUsersUIds();
                                         // pint(cubit.gg.length.toString());
                                         // pint(cubit.myPostId.last.toString());
                                         // pint(cubit.feedPostId.last.toString());
                                       },
                                       child: const Text(
-                                        'modifyPost',
+                                        'See Demo Screen',
                                         style: TextStyle(color: Colors.white),
                                       ),
                                     ),
@@ -178,6 +182,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                             condition: cubit.stories.isNotEmpty,
                             builder: (context) => ListView.separated(
                               shrinkWrap: true,
+                              reverse: true,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
                                 storyIndex = index;
@@ -205,6 +210,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                       physics: const BouncingScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
+                      reverse: true,
                       itemBuilder: (context, index) {
                         return buildPostItem(
                           moreVert: InkWell(
@@ -251,7 +257,7 @@ class _FeedsScreenState extends State<FeedsScreen> {
                         style: GoogleFonts.lobster(
                             color: Colors.deepPurple,
                             fontSize: 24.0,
-                            fontWeight: FontWeight.w700),
+                            fontWeight: FontWeight.w700,),
                       ),
                     ),
                   ),

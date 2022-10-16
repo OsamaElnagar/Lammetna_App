@@ -34,8 +34,10 @@ class AppCubit extends Cubit<AppStates> {
   PostModel? postModel;
   LikePostModel? likePostModel;
   File? postImageFile;
+  File? postVideoFile;
   File? profileImageFile;
   File? storyImageFile;
+  File? storyVideoFile;
   File? coverImageFile;
   File? commentImageFile;
   File? commentReplyImageFile;
@@ -65,7 +67,29 @@ class AppCubit extends Cubit<AppStates> {
   List<PostModel> gg=[];
 
 ////////////////////////////////
+  void getGalleryPostVideo() async {
+    var pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      postVideoFile = File(pickedFile.path);
 
+      emit(AppGetGalleryImageSuccessState());
+    } else {
+      pint('No Video selected');
+      emit(AppGetGalleryImageErrorState());
+    }
+  }
+
+  void getCameraPostVideo() async {
+    var pickedFile = await picker.pickVideo(source: ImageSource.camera);
+    if (pickedFile != null) {
+      postVideoFile = File(pickedFile.path);
+      emit(AppGetCameraImageSuccessState());
+    } else {
+      pint('No Video selected');
+      emit(AppGetCameraImageErrorState());
+    }
+  }
+////////////////////////////////
   void fillUsersUIds(){
     usersUIds.clear();
     gg.clear();
@@ -165,6 +189,7 @@ class AppCubit extends Cubit<AppStates> {
       postDate: postDate,
       postText: postText,
       postImage: postImage,
+      videoLink: '',
       postLikes: 0,
       postComments: 0,
       postShares: 0,
@@ -494,6 +519,7 @@ class AppCubit extends Cubit<AppStates> {
       postDate: postDate,
       postText: postText,
       postImage: postImage ?? '',
+      videoLink: '',
       postLikes: 0,
       postComments: 0,
       postShares: 0,
@@ -525,6 +551,7 @@ class AppCubit extends Cubit<AppStates> {
       postDate: postDate,
       postText: postText,
       postImage: postImage ?? '',
+      videoLink: '',
       postLikes: 0,
       postComments: 0,
       postShares: 0,
