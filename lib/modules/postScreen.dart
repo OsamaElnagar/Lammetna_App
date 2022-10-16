@@ -144,20 +144,20 @@ class _NewPostScreenState extends State<NewPostScreen> {
                                                             .toLocal()
                                                             .toString(),
                                                       );
-                                                      AppCubit.get(context)
-                                                          .createPost(
-                                                              postText:
-                                                                  postText,
-                                                              postDate: DateTime
-                                                                      .now()
-                                                                  .toLocal()
-                                                                  .toString(),
-                                                              context: context);
+                                                      // AppCubit.get(context)
+                                                      //     .createPost(
+                                                      //         postText:
+                                                      //             postText,
+                                                      //         postDate: DateTime
+                                                      //                 .now()
+                                                      //             .toLocal()
+                                                      //             .toString(),
+                                                      //         context: context);
                                                     }
                                                     AppCubit.get(context)
                                                         .clearPostImagesList();
                                                     postText = '';
-                                                    Future.delayed(Duration(seconds: 3,),() {
+                                                    Future.delayed(const Duration(seconds: 2,),() {
                                                       navigate2(context,
                                                           const HomeLayout());
                                                     }, );
@@ -365,10 +365,10 @@ class _NewPostScreenState extends State<NewPostScreen> {
                               postText: postText,
                               postDate: DateTime.now().toLocal().toString(),
                               context: context);
-                          AppCubit.get(context).createPost(
-                              postText: postText,
-                              postDate: DateTime.now().toLocal().toString(),
-                              context: context);
+                          // AppCubit.get(context).createPost(
+                          //     postText: postText,
+                          //     postDate: DateTime.now().toLocal().toString(),
+                          //     context: context);
                         }
                         AppCubit.get(context).clearPostImagesList();
                         postText = '';

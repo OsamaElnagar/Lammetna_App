@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
@@ -24,10 +25,12 @@ class _HomeLayoutState extends State<HomeLayout> {
           length: 3,
           child: Scaffold(
             body: NestedScrollView(
+
               floatHeaderSlivers: true,
               headerSliverBuilder: (context, innerBoxIsScrolled) => [
                 SliverAppBar(
                   floating: true,
+
                   title: cubit.appTitles[cubit.currentIndex],
                   actions: [
                     if (cubit.currentIndex == 2)
@@ -50,6 +53,9 @@ class _HomeLayoutState extends State<HomeLayout> {
                     onTap: (index) {
                       cubit.changeIndex(index);
                     },
+
+                    physics: const BouncingScrollPhysics(),
+                    dragStartBehavior: DragStartBehavior.start,
                     tabs: const [
                       Tab(
                         icon: Icon(

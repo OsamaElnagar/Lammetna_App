@@ -37,10 +37,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         var profileModel = AppCubit.get(context).loginModel;
         var profileImageFile = AppCubit.get(context).profileImageFile;
         var coverImageFile = AppCubit.get(context).coverImageFile;
-        // nameController.text = profileModel!.name;
-        // phoneController.text = profileModel.phone;
-        // emailController.text = profileModel.email;
-        // bioController.text = profileModel.bio;
 
         return Scaffold(
           appBar: AppBar(

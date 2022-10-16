@@ -2,19 +2,33 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:social_app/demo/demoVideo.dart';
 import 'package:social_app/modules/postScreen.dart';
 import 'package:social_app/shared/bloc/AppCubit/cubit.dart';
 import 'package:social_app/shared/bloc/AppCubit/states.dart';
 import 'package:social_app/shared/components/buildStoryItem.dart';
 import 'package:social_app/shared/components/components.dart';
 import 'package:social_app/shared/components/constants.dart';
+import 'package:social_app/shared/components/popupMenuItems.dart';
 import '../shared/components/buildPostItem.dart';
 
-class FeedsScreen extends StatelessWidget {
+class FeedsScreen extends StatefulWidget {
   const FeedsScreen({Key? key}) : super(key: key);
 
   @override
+  State<FeedsScreen> createState() => _FeedsScreenState();
+}
+
+class _FeedsScreenState extends State<FeedsScreen> {
+  // ↓ hold tap position, set during onTapDown, using getPosition() method
+  late Offset tapXY;
+
+// ↓ hold screen size, using first line in build() method.
+  RenderBox? overlay;
+
+  @override
   Widget build(BuildContext context) {
+    overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox?;
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
       builder: (context, state) {
@@ -24,7 +38,7 @@ class FeedsScreen extends StatelessWidget {
           onRefresh: () {
             return Future.delayed(
               const Duration(milliseconds: 1800),
-              () {
+              (){
                 cubit.getFeedPosts();
                 cubit.getStory();
               },
@@ -106,7 +120,25 @@ class FeedsScreen extends StatelessWidget {
                                             context, const NewPostScreen());
                                       },
                                       child: const Text(
-                                        'More details',
+                                        'More Details',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: (){
+                                        navigateTo(
+                                            context, const DemoScreen());
+
+                                        // cubit.fillUsersUIds();
+                                        // pint(cubit.gg.length.toString());
+                                        // pint(cubit.myPostId.last.toString());
+                                        // pint(cubit.feedPostId.last.toString());
+                                      },
+                                      child: const Text(
+                                        'See Demo Screen',
                                         style: TextStyle(color: Colors.white),
                                       ),
                                     ),
@@ -150,6 +182,7 @@ class FeedsScreen extends StatelessWidget {
                             condition: cubit.stories.isNotEmpty,
                             builder: (context) => ListView.separated(
                               shrinkWrap: true,
+                              reverse: true,
                               scrollDirection: Axis.horizontal,
                               itemBuilder: (context, index) {
                                 storyIndex = index;
@@ -177,8 +210,28 @@ class FeedsScreen extends StatelessWidget {
                       physics: const BouncingScrollPhysics(),
                       scrollDirection: Axis.vertical,
                       shrinkWrap: true,
+                      reverse: true,
                       itemBuilder: (context, index) {
                         return buildPostItem(
+                          moreVert: InkWell(
+                            onTapDown: getPosition,
+                            onTap: () {
+                              showMenu(
+                                  context: context,
+                                  position: relRectSize,
+                                  items:[
+                                    popupDo(onPress: (){}, childLabel: 'Follow'),
+                                    popupDo(onPress: (){}, childLabel: 'Hide post'),
+                                    popupDo(onPress: (){}, childLabel: 'Show more'),
+                                    popupDo(onPress: (){}, childLabel: 'Show less'),
+                                  ],
+                              );
+                            },
+                            child: const Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Icon(Icons.more_vert),
+                            ),
+                          ),
                           postModel: cubit.feedPosts[index],
                           // loginModel: cubit.allUsers[index],
                           context: context,
@@ -204,7 +257,7 @@ class FeedsScreen extends StatelessWidget {
                         style: GoogleFonts.lobster(
                             color: Colors.deepPurple,
                             fontSize: 24.0,
-                            fontWeight: FontWeight.w700),
+                            fontWeight: FontWeight.w700,),
                       ),
                     ),
                   ),
@@ -218,5 +271,14 @@ class FeedsScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  // ↓ create the RelativeRect from size of screen and where you tapped
+  RelativeRect get relRectSize =>
+      RelativeRect.fromSize(tapXY & const Size(40, 40), overlay!.size);
+
+  // ↓ get the tap position Offset
+  void getPosition(TapDownDetails detail) {
+    tapXY = detail.globalPosition;
   }
 }

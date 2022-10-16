@@ -120,7 +120,7 @@ class VisitedProfileScreen extends StatelessWidget {
                             physics: const NeverScrollableScrollPhysics(),
                             scrollDirection: Axis.vertical,
                             shrinkWrap: true,
-                            itemBuilder: (context, index) => buildProfilePostItem(
+                            itemBuilder: (context, index) => buildVisitedProfilePostItem(
                               postModel: cubit.visitedUserPosts[index],
                               index: index,
                               context: context,

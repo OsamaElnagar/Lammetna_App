@@ -1,5 +1,3 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -25,7 +23,8 @@ import '../../../modules/profileScreen.dart';
 import '../../components/constants.dart';
 import '../../styles/iconBroken.dart';
 import 'dart:io';
-
+import 'package:video_player/video_player.dart';
+import 'package:image_picker/image_picker.dart';
 class AppCubit extends Cubit<AppStates> {
   AppCubit(AppStates initialState) : super(AppInitialState());
 
@@ -35,8 +34,10 @@ class AppCubit extends Cubit<AppStates> {
   PostModel? postModel;
   LikePostModel? likePostModel;
   File? postImageFile;
+  File? postVideoFile;
   File? profileImageFile;
   File? storyImageFile;
+  File? storyVideoFile;
   File? coverImageFile;
   File? commentImageFile;
   File? commentReplyImageFile;
@@ -61,6 +62,155 @@ class AppCubit extends Cubit<AppStates> {
   List<ChatsModel> messages = [];
   Map<String, dynamic> user = {};
   List<PostModel> visitedUserPosts = [];
+  String repeatedId='';
+  List<String> usersUIds = [];
+  List<PostModel> gg=[];
+
+////////////////////////////////
+  void getGalleryPostVideo() async {
+    var pickedFile = await picker.pickVideo(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      postVideoFile = File(pickedFile.path);
+
+      emit(AppGetGalleryImageSuccessState());
+    } else {
+      pint('No Video selected');
+      emit(AppGetGalleryImageErrorState());
+    }
+  }
+
+  void getCameraPostVideo() async {
+    var pickedFile = await picker.pickVideo(source: ImageSource.camera);
+    if (pickedFile != null) {
+      postVideoFile = File(pickedFile.path);
+      emit(AppGetCameraImageSuccessState());
+    } else {
+      pint('No Video selected');
+      emit(AppGetCameraImageErrorState());
+    }
+  }
+////////////////////////////////
+  void fillUsersUIds(){
+    usersUIds.clear();
+    gg.clear();
+    emit(AppFillUsersUIdsLoadingState());
+    FirebaseFirestore.instance.
+    collection('users').get().then((value) {
+      for (var element in value.docs){
+        usersUIds.add(element.id);
+        element.reference.collection('posts').get().then((value) {
+          for(var ele in value.docs){
+            gg.add(PostModel.fromJson(ele.data()));
+            pint(gg.length.toString());
+          }
+        });
+        pint(usersUIds.toString());
+
+        emit(AppFillUsersUIdsSuccessState());
+      }
+    }).catchError((onError){
+      pint(onError.toString());
+      emit(AppFillUsersUIdsErrorState(onError.toString()));
+    });
+  }
+  // we created this method to fill a list of PM to display it in the feedsScreen.
+  // and like that if ia wanna delete a user i could access his posts bounded together under a unique uId.
+////////////////////////////////
+
+
+  void playPauseVideo(VideoPlayerController controller) {
+    if (controller.value.isPlaying) {
+      controller.pause();
+    } else {
+      controller.play();
+    }
+    emit(AppPlayPauseVideoState());
+  }
+
+  void getFeedPosts() {
+    feedPosts.clear();
+    feedPostId.clear();
+    emit(AppGetFeedPostLoadingState());
+    FirebaseFirestore.instance
+        .collection('posts')
+        .orderBy('postDate')
+        .get()
+        .then((value) {
+      for (var element in value.docs) {
+        feedPostId.add(element.id);
+        feedPosts.add(PostModel.fromJson(element.data()));
+        emit(AppGetFeedPostSuccessState());
+      }
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppGetFeedPostErrorState(onError.toString()));
+    });
+  }
+
+  void modifyPost({
+    required String feedPostId,
+    required String postText,
+    required String postImage,
+  }) {
+    emit(AppModifyPostLoadingState());
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(feedPostId)
+        .update({'postText': postText, 'postImage': postImage}).then((value) {
+      emit(AppModifyPostSuccessState());
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppModifyPostErrorState(onError.toString()));
+    });
+    /////////////////////////////
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(feedPostId)
+        .update({'postText': postText, 'postImage': postImage}).then((value) {
+      emit(AppModifyPostSuccessState());
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppModifyPostErrorState(onError.toString()));
+    });
+  }
+
+
+  void createPostInTwoPlaces({
+    required String postText,
+    required String postImage,
+    required String postDate,
+  }) {
+    repeatedId = '';
+    emit(AppModifyPostLoadingState());
+    PostModel postModel = PostModel(
+      name: loginModel!.name,
+      postUid: loginModel!.uId,
+      profileImage: loginModel!.profileImage,
+      postDate: postDate,
+      postText: postText,
+      postImage: postImage,
+      videoLink: '',
+      postLikes: 0,
+      postComments: 0,
+      postShares: 0,
+    );
+    FirebaseFirestore.instance
+        .collection('posts')
+        .add(postModel.toMap())
+        .then((value) {
+         repeatedId = value.id;
+         pint(repeatedId);
+         FirebaseFirestore.instance
+             .collection('users').
+         doc(uId).collection('posts')
+             .doc(repeatedId)
+             .set(postModel.toMap());
+      emit(AppCreatePostSuccessState());
+    }).catchError((onError) {
+      pint(onError.toString());
+      emit(AppCreatePostErrorState(onError.toString()));
+    });
+  }
 
   void getVisitedUserPosts({required String uId, context}) {
     visitedUserPosts.clear();
@@ -369,6 +519,7 @@ class AppCubit extends Cubit<AppStates> {
       postDate: postDate,
       postText: postText,
       postImage: postImage ?? '',
+      videoLink: '',
       postLikes: 0,
       postComments: 0,
       postShares: 0,
@@ -400,6 +551,7 @@ class AppCubit extends Cubit<AppStates> {
       postDate: postDate,
       postText: postText,
       postImage: postImage ?? '',
+      videoLink: '',
       postLikes: 0,
       postComments: 0,
       postShares: 0,
@@ -408,7 +560,13 @@ class AppCubit extends Cubit<AppStates> {
         .collection('posts')
         .add(postModel.toMap())
         .then((value) {
-      emit(AppCreatePostSuccessState());
+          repeatedId = value.id;
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(uId)
+              .collection('posts').doc(repeatedId)
+              .set(postModel.toMap());
+          emit(AppCreatePostSuccessState());
     }).catchError((onError) {
       pint(onError.toString());
       emit(AppCreatePostErrorState(onError.toString()));
@@ -426,7 +584,7 @@ class AppCubit extends Cubit<AppStates> {
         .putFile(postImageFile!)
         .then((value) {
       value.ref.getDownloadURL().then((value) {
-        createPost(postText: postText, postDate: postDate, postImage: value);
+        // createPost(postText: postText, postDate: postDate, postImage: value);
         createFeedPost(
             postText: postText, postDate: postDate, postImage: value);
         emit(AppUploadPostImageSuccessState());
@@ -461,26 +619,7 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  void getFeedPosts() {
-    feedPosts.clear();
-    feedPostId.clear();
-    emit(AppGetFeedPostLoadingState());
-    FirebaseFirestore.instance
-        .collection('posts')
-        .orderBy('postDate')
-        .get()
-        .then((value) {
-      for (var element in value.docs) {
-        feedPostId.add(element.id);
-        pint(feedPostId.toString());
-        feedPosts.add(PostModel.fromJson(element.data()));
-        emit(AppGetFeedPostSuccessState());
-      }
-    }).catchError((onError) {
-      pint(onError.toString());
-      emit(AppGetFeedPostErrorState(onError.toString()));
-    });
-  }
+
 
   void getGalleryStoryImage() async {
     var pickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -597,7 +736,7 @@ class AppCubit extends Cubit<AppStates> {
   void clearPostImagesList() {
     postImageFiles.clear();
     postImageFile = null;
-    emit(AppCleatPostImageListSuccessState());
+    emit(AppCreatePostImageListSuccessState());
   }
 
   void getGalleryCommentImage() async {
@@ -1166,6 +1305,7 @@ class AppCubit extends Cubit<AppStates> {
         icon: Icon(IconBroken.Profile), label: 'Profile')
   ];
 
+
   List<Widget> screens = [
     const FeedsScreen(),
     const ChatsScreen(),
@@ -1203,14 +1343,13 @@ class AppCubit extends Cubit<AppStates> {
     emit(AppUpdateStoryIndexSuccessState());
   }
 
-  void swipeLeft(){
-    storyIndex=storyIndex-1;
+  void swipeLeft() {
+    storyIndex = storyIndex - 1;
     emit(AppSwipeLeftState());
   }
-  void swipeRight(){
-    storyIndex=storyIndex+1;
+
+  void swipeRight() {
+    storyIndex = storyIndex + 1;
     emit(AppSwipeRightState());
   }
-
-
 }

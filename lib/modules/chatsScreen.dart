@@ -18,6 +18,12 @@ class ChatsScreen extends StatefulWidget {
 
 class _ChatsScreenState extends State<ChatsScreen> {
   @override
+  void initState() {
+    // TODO: implement initState
+    AppCubit.get(context).getAllUsers();
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
